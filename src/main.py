@@ -35,7 +35,7 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
+@app.route('/process-new-user', methods=['GET'])
 def handle_hello():
 
     response_body = {
