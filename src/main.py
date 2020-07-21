@@ -109,10 +109,11 @@ def getuser(user_email):
     # Access the identity of the current user with get_jwt_identity
 
     # get only the ones named "Joe"
-    user_query = User.query.filter_by(email=user_email)
-    print(user_query)
-    print(user_email)
-    return jsonify(str(user_query)), 200
+    user_query = User.query.filter_by(email=user_email).first()
+    #print(user_query)
+    #print(user_email)
+    all_user_info = (user_query.serialize())
+    return jsonify(all_user_info), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
