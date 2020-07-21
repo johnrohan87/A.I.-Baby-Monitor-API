@@ -4,6 +4,8 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    babies = db.relationship('Baby', lazy=True)
+
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
@@ -15,5 +17,85 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "is_active": self.is_active,
+            "babies": list(map(lambda x: x.serialize(), self.babies))
             # do not serialize the password, its a security breach
         }
+
+class Baby(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    baby_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    first_name = db.Column(db.String(80), nullable=False)
+    last_name = db.Column(db.String(80), nullable=False)
+    dob_baby = db.Column(db.String(10), nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<Baby %r>' % self.baby_id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "baby_id": self.baby_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "dob_baby": self.dob_baby,
+            "is_active": self.is_active
+            # do not serialize the password, its a security breach
+        }
+
+class Alarm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    baby_id = db.Column(db.Integer, db.ForeignKey("baby.id"))
+
+    crying = db.Column(db.String(80), nullable=False)
+    overheated = db.Column(db.Boolean(), unique=False, nullable=False)
+    breathing = db.Column(db.Boolean(), unique=False, nullable=False)
+    face_down = db.Column(db.Boolean(), unique=False, nullable=False)
+    out_of_crib = db.Column(db.Boolean(), unique=False, nullable=False)
+    time_stamp = db.Column(db.String(10), nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<Alarm %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "baby_id": self.baby_id,
+            "crying": self.crying,
+            "overheated": self.overheated,
+            "breathing": self.breathing,
+            "face_down": self.face_down,
+            "out_of_crib": self.out_of_crib,
+            "time_stamp": self.time_stamp,
+            "is_active": self.is_active
+            # do not serialize the password, its a security breach
+        }
+
+class Status(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    baby_id = db.Column(db.Integer, db.ForeignKey("baby.id"))
+
+    face_direction = db.Column(db.String(10), nullable=False)
+    breathing = db.Column(db.String(10), unique=False, nullable=False)
+    last_movement = db.Column(db.String(10), nullable=False)
+    time_stamp = db.Column(db.String(10), nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<Status %r>' % self.baby_id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "baby_id": self.baby_id,
+            "face_direction": self.face_direction,
+            "breathing": self.breathing,
+            "last_movement": self.last_movement,
+            "time_stamp": self.time_stamp,
+            "is_active": self.is_active
+            # do not serialize the password, its a security breach
+        }
+

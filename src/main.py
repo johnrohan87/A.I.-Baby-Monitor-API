@@ -35,11 +35,20 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/process-new-user', methods=['GET'])
-def handle_hello():
+@app.route('/user', methods=['GET'])
+def get_user_info():
+
+    user_query = User.query.all()
+    all_users = list(map(lambda x: x.serialize(), user_query))
+
+    return jsonify(all_users), 200
+
+@app.route('/process-new-user/<string:user_email>/<string:user_pass>', methods=['POST'])
+def handle_new_user(user_email,user_pass):
 
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "msg": "Hello, this is your GET /user response - email = " + user_email + " pass = " + user_pass,
+        'jwt': create_jwt(identity=str(user_email))
     }
 
     return jsonify(response_body), 200
