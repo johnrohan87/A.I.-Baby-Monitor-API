@@ -103,6 +103,17 @@ def protected():
     # Access the identity of the current user with get_jwt_identity
     return jsonify({'hello_from': get_jwt_identity()}), 200
 
+@app.route('/getuser/<string:user_email>/', methods=['GET'])
+@jwt_required
+def getuser(user_email):
+    # Access the identity of the current user with get_jwt_identity
+
+    # get only the ones named "Joe"
+    user_query = User.query.filter_by(email=user_email)
+    print(user_query)
+    print(user_email)
+    return jsonify(str(user_query)), 200
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
