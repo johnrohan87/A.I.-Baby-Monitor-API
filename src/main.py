@@ -35,9 +35,10 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['GET'])
 def get_user_info():
 
+    #only for dev!!!
     user_query = User.query.all()
     all_users = list(map(lambda x: x.serialize(), user_query))
 
@@ -46,10 +47,28 @@ def get_user_info():
 @app.route('/process-new-user/<string:user_email>/<string:user_pass>', methods=['POST'])
 def handle_new_user(user_email,user_pass):
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response - email = " + user_email + " pass = " + user_pass,
-        'jwt': create_jwt(identity=str(user_email))
-    }
+    exists = db.session.query(User.id).filter_by(email=user_email).scalar() is not None
+    if exists == False:
+        #response_body = {
+        #    "msg": "Hello, this is your GET /user response - email = " + user_email + " pass = " + user_pass,
+        #    "exists": str(exists),
+        #    'jwt': create_jwt(identity=str(user_email))
+        #}
+
+        #add user info to db
+        data = User(email=user_email,password=user_pass,is_active=True)
+
+        db.session.add(data)
+        db.session.flush()
+        db.session.commit()
+
+        return jsonify(str(data)), 200
+
+    else:
+        response_body = {
+            "msg": "Hello, this is your POST /process-new-user/ response - email = " + user_email + " pass = " + user_pass,
+            "exists": str(exists) + " this email is already in use"
+        }
 
     return jsonify(response_body), 200
 
