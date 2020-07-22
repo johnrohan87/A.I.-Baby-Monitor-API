@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User,Baby,Alarm,Status
 #from models import Person
 from flask_jwt_simple import ( JWTManager, jwt_required, create_jwt, get_jwt_identity)
 
@@ -62,15 +62,19 @@ def handle_new_user(user_email,user_pass):
         db.session.flush()
         db.session.commit()
 
-        return jsonify(str(data)), 200
+        
+        ret = {'jwt': create_jwt(identity=user.id),
+        "data-processed":data
+        }
+        return jsonify(ret), 200
 
     else:
         response_body = {
             "msg": "Hello, this is your POST /process-new-user/ response - email = " + user_email + " pass = " + user_pass,
             "exists": str(exists) + " this email is already in use"
         }
-
-    return jsonify(response_body), 200
+        return jsonify(response_body), 200
+   
 
 # Provide a method to create access tokens. The create_jwt()
 # function is used to actually generate the token
@@ -114,6 +118,34 @@ def getuser(user_email):
     #print(user_email)
     all_user_info = (user_query.serialize())
     return jsonify(all_user_info), 200
+
+@app.route('/babies', methods=['POST','GET'])
+@jwt_required
+def addbaby():
+
+    #/<string:user_id>/<string:babyFirstName>/<string:babyLastName>/<string:dob>/<string:timeZone>/<string:gender>
+    #user_id,babyFirstName,babyLastName,dob,timeZone,gender
+    if request.method == "GET":
+        return jsonify("not implemented"),501
+    elif request.method == 'POST':
+        params = request.get_json()
+        user_id = get_jwt_identity()
+        new_baby = Baby(
+            parent_id=user_id,
+            first_name=params["first_name"],
+            last_name=params["last_name"],
+            dob_baby=params["dob_baby"],
+            time_zone=params["time_zone"],
+            baby_gender=params["baby_gender"]
+        )
+        db.session.add(new_baby)
+        try:
+            db.session.commit()
+            return jsonify(new_baby.serialize()),201
+        except Exception as error:
+            db.session.rollback()
+            print(error)
+            return jsonify(error), 500
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    babies = db.relationship('Baby', lazy=True)
+    babies = db.relationship('Baby',backref='parent', lazy=True)
 
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
@@ -24,23 +24,37 @@ class User(db.Model):
 
 class Baby(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    baby_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    parent_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
     dob_baby = db.Column(db.String(10), nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    time_zone = db.Column(db.String(10), nullable=False)
+    baby_gender = db.Column(db.String(10), nullable=False)
+
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False, default=True)
+
+    def __init__(self,parent_id,first_name,last_name,dob_baby,time_zone,baby_gender):
+        self.parent_id = parent_id
+        self.first_name = first_name
+        self.last_name = last_name
+        self.dob_baby = dob_baby
+        self.time_zone = time_zone
+        self.baby_gender = baby_gender
+
 
     def __repr__(self):
-        return '<Baby %r>' % self.baby_id
+        return f'<Baby {self.baby_id}>' 
 
     def serialize(self):
         return {
             "id": self.id,
-            "baby_id": self.baby_id,
+            "parent_id": self.parent_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "dob_baby": self.dob_baby,
+            "time_zone": self.time_zone,
+            "baby_gender": self.baby_gender,
             "is_active": self.is_active
             # do not serialize the password, its a security breach
         }
