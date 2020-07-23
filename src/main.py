@@ -107,19 +107,22 @@ def protected():
     # Access the identity of the current user with get_jwt_identity
     return jsonify({'hello_from': get_jwt_identity()}), 200
 
-@app.route('/getuser/<string:user_email>/', methods=['GET'])
+@app.route('/user', methods=['GET','POST'])
 @jwt_required
-def getuser(user_email):
-    # Access the identity of the current user with get_jwt_identity
+def getuser():
+    if request.method == "GET":
+        # Access the identity of the current user with get_jwt_identity
+        user_id = get_jwt_identity()
+        # get user by id
+        user_query = User.query.get(user_id)
 
-    # get only the ones named "Joe"
-    user_query = User.query.filter_by(email=user_email).first()
-    #print(user_query)
-    #print(user_email)
-    all_user_info = (user_query.serialize())
-    return jsonify(all_user_info), 200
+        #get user db info and return
+        all_user_info = (user_query.serialize())
+        return jsonify(all_user_info), 200
+    #if request.method == "POST"
 
-@app.route('/babies', methods=['POST','GET'])
+
+@app.route('/babies', methods=['POST','GET','DELETE'])
 @jwt_required
 def addbaby():
 
@@ -146,6 +149,48 @@ def addbaby():
             db.session.rollback()
             print(error)
             return jsonify(error), 500
+
+    elif request.method == "DELETE":
+        params = request.get_json()
+        user_id = get_jwt_identity()
+        babyID = params["baby_id"]
+
+
+        #baby1 = db.session.query(Baby.id).filter_by(id=babyID)
+        baby1 = Baby.query.get(babyID)
+        if baby1 is None:
+            raise APIException('baby not found = '+str(babyID), status_code=404)
+        db.session.delete(baby1)
+        db.session.commit()
+        return jsonify(str(baby1)), 200
+
+@app.route('/alarm', methods=['POST','GET','DELETE'])
+@jwt_required
+def alarm():
+    params = request.get_json()
+    user_id = get_jwt_identity()
+    if request.method == "GET":
+        return jsonify("not implemented"),501
+
+    elif request.method == "DELETE":
+        return jsonify("not implemented"),501
+
+    elif request.method == "POST":
+        if params is None:
+            raise APIException('params empty', status_code=404)
+        new_alarm = Alarm(
+            baby_id =params["baby_id"],
+            crying = params["crying"],
+            overheated = params["overheated"],
+            breathing = params["breathing"],
+            face_down = params["face_down"],
+            out_of_crib = params["out_of_crib"],
+            time_stamp = params["time_stamp"],
+            is_active = params["is_active"]
+        )
+        print(new_alarm)
+        return jsonify(str(new_alarm)),200
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

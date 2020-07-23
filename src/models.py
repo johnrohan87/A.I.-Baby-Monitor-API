@@ -25,6 +25,7 @@ class User(db.Model):
 class Baby(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    alarms = db.relationship('Alarm',backref='subjectBaby', lazy=True)
 
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
@@ -44,12 +45,13 @@ class Baby(db.Model):
 
 
     def __repr__(self):
-        return f'<Baby {self.baby_id}>' 
+        return f'<Baby {self.id}>' 
 
     def serialize(self):
         return {
             "id": self.id,
             "parent_id": self.parent_id,
+            "alarms": list(map(lambda x: x.serialize(), self.alarms)),
             "first_name": self.first_name,
             "last_name": self.last_name,
             "dob_baby": self.dob_baby,
@@ -63,12 +65,12 @@ class Alarm(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     baby_id = db.Column(db.Integer, db.ForeignKey("baby.id"))
 
-    crying = db.Column(db.String(80), nullable=False)
+    crying = db.Column(db.String(80), unique=False, nullable=False)
     overheated = db.Column(db.Boolean(), unique=False, nullable=False)
     breathing = db.Column(db.Boolean(), unique=False, nullable=False)
     face_down = db.Column(db.Boolean(), unique=False, nullable=False)
     out_of_crib = db.Column(db.Boolean(), unique=False, nullable=False)
-    time_stamp = db.Column(db.String(10), nullable=False)
+    time_stamp = db.Column(db.String(10), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
