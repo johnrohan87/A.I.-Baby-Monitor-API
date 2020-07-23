@@ -165,7 +165,7 @@ def addbaby():
         return jsonify(str(baby1)), 200
 
 @app.route('/alarm', methods=['POST','GET','DELETE'])
-@jwt_required
+#@jwt_required
 def alarm():
     params = request.get_json()
     user_id = get_jwt_identity()
@@ -177,6 +177,7 @@ def alarm():
 
     elif request.method == "POST":
         if params is None:
+            print(params)
             raise APIException('params empty', status_code=404)
         new_alarm = Alarm(
             baby_id =params["baby_id"],
@@ -185,11 +186,17 @@ def alarm():
             breathing = params["breathing"],
             face_down = params["face_down"],
             out_of_crib = params["out_of_crib"],
-            time_stamp = params["time_stamp"],
             is_active = params["is_active"]
         )
         print(new_alarm)
-        return jsonify(str(new_alarm)),200
+        db.session.add(new_alarm)
+        try:
+            db.session.commit()
+            return jsonify(new_alarm.serialize()),201
+        except Exception as error:
+            db.session.rollback()
+            print(error)
+            return jsonify(error), 500
 
 
 # this only runs if `$ python src/main.py` is executed

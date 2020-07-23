@@ -1,4 +1,8 @@
+import datetime
 from flask_sqlalchemy import SQLAlchemy
+
+
+
 
 db = SQLAlchemy()
 
@@ -70,7 +74,7 @@ class Alarm(db.Model):
     breathing = db.Column(db.Boolean(), unique=False, nullable=False)
     face_down = db.Column(db.Boolean(), unique=False, nullable=False)
     out_of_crib = db.Column(db.Boolean(), unique=False, nullable=False)
-    time_stamp = db.Column(db.String(10), unique=False, nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
@@ -85,7 +89,7 @@ class Alarm(db.Model):
             "breathing": self.breathing,
             "face_down": self.face_down,
             "out_of_crib": self.out_of_crib,
-            "time_stamp": self.time_stamp,
+            "created_date": self.created_date,
             "is_active": self.is_active
             # do not serialize the password, its a security breach
         }
