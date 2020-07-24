@@ -177,7 +177,7 @@ def alarm():
 
     elif request.method == "POST":
         if params is None:
-            print(params)
+            print(str(params))
             raise APIException('params empty', status_code=404)
         new_alarm = Alarm(
             baby_id =params["baby_id"],
@@ -188,15 +188,15 @@ def alarm():
             out_of_crib = params["out_of_crib"],
             is_active = params["is_active"]
         )
-        print(new_alarm)
+        print(str(new_alarm))
         db.session.add(new_alarm)
         try:
             db.session.commit()
             return jsonify(new_alarm.serialize()),201
         except Exception as error:
             db.session.rollback()
-            print(error)
-            return jsonify(error), 500
+            print(str(error))
+            return jsonify(str(error)), 500
 
 
 # this only runs if `$ python src/main.py` is executed
