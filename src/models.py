@@ -70,8 +70,9 @@ class Alarm(db.Model):
     baby_id = db.Column(db.Integer, db.ForeignKey("baby.id"))
 
     crying = db.Column(db.String(80), unique=False, nullable=False)
+    decibel_level = db.Column(db.Integer(), unique=False)
     overheated = db.Column(db.Boolean(), unique=False, nullable=False)
-    breathing = db.Column(db.Boolean(), unique=False, nullable=False)
+    breathing = db.Column(db.Integer(), unique=False)
     face_down = db.Column(db.Boolean(), unique=False, nullable=False)
     out_of_crib = db.Column(db.Boolean(), unique=False, nullable=False)
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -85,6 +86,7 @@ class Alarm(db.Model):
             "id": self.id,
             "baby_id": self.baby_id,
             "crying": self.crying,
+            "decibel_level": self.decibel_level,
             "overheated": self.overheated,
             "breathing": self.breathing,
             "face_down": self.face_down,
