@@ -182,6 +182,12 @@ def alarm():
         new_alarm = Alarm(
             baby_id =params["baby_id"],
             crying = params["crying"],
+            hungry = params["hungry"],
+            tired = params["tired"],
+            enough = params["enough"],
+            bored = params["bored"],
+            colic = params["colic"],
+            sick = params["sick"],
             decibel_level = params["decibel_level"],
             overheated = params["overheated"],
             breathing = params["breathing"],

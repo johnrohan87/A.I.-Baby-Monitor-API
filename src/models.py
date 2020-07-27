@@ -70,6 +70,13 @@ class Alarm(db.Model):
     baby_id = db.Column(db.Integer, db.ForeignKey("baby.id"))
 
     crying = db.Column(db.String(80), unique=False, nullable=False)
+    hungry = db.Column(db.Integer(), unique=False, default=0)
+    tired = db.Column(db.Integer(), unique=False, default=0)
+    enough = db.Column(db.Integer(), unique=False, default=0)
+    bored = db.Column(db.Integer(), unique=False, default=0)
+    colic = db.Column(db.Integer(), unique=False, default=0)
+    sick = db.Column(db.Integer(), unique=False, default=0)
+
     decibel_level = db.Column(db.Integer(), unique=False)
     overheated = db.Column(db.Boolean(), unique=False, nullable=False)
     breathing = db.Column(db.Integer(), unique=False)
@@ -86,6 +93,12 @@ class Alarm(db.Model):
             "id": self.id,
             "baby_id": self.baby_id,
             "crying": self.crying,
+            "hungry": self.hungry,
+            "tired": self.tired,
+            "enough": self.enough,
+            "bored": self.bored,
+            "colic": self.colic,
+            "sick": self.sick,
             "decibel_level": self.decibel_level,
             "overheated": self.overheated,
             "breathing": self.breathing,
