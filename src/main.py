@@ -195,6 +195,8 @@ def alarm():
             out_of_crib = params["out_of_crib"],
             is_active = params["is_active"]
         )
+
+        
         print(str(new_alarm))
         db.session.add(new_alarm)
         try:
