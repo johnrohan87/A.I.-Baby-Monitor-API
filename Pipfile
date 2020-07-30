@@ -20,6 +20,7 @@ mysqlclient = "*"
 flask-admin = "*"
 flask-jwt-simple = "*"
 datetime = "*"
+twilio = "*"
 
 [requires]
 python_version = "3.8"

@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+from twilio.rest import Client
 from flask import Flask, request, jsonify, url_for, request
 from flask_migrate import Migrate
 from flask_swagger import swagger
@@ -201,6 +202,15 @@ def alarm():
         db.session.add(new_alarm)
         try:
             db.session.commit()
+            account_sid = os.getenv("API_HOST")
+            auth_token = os.getenv("API_KEY")
+            client = Client(account_sid, auth_token)
+            message = client.messages.create(
+                        body=str(new_alarm),
+                        from_='+17243906722',
+                        to='7862174153'
+                    )
+            print(message.sid)
             return jsonify(new_alarm.serialize()),201
         except Exception as error:
             db.session.rollback()
