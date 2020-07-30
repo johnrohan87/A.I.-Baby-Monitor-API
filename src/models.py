@@ -86,7 +86,7 @@ class Alarm(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<Alarm %r>' % self.id
+        return f'<Alarm id-{self.id}baby_id-{self.baby.id}>'
 
     def serialize(self):
         return {
